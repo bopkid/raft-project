@@ -1,25 +1,58 @@
-import logo from './logo.svg';
+import React , {useState} from 'react';
+import { withRouter } from 'react-router-dom'
+import Routes from './config/routes'
+
+import Header from './pages/Header'
+
+import UserModel from './models/user'
+
+
 import './App.css';
 
-function App() {
+
+
+function App (props) {
+  
+
+
+  const [currentUser, setCurrentUser] = useState(localStorage.getItem('uid'))
+
+  const storeUser = (userId) =>{
+    setCurrentUser(userId)
+    localStorage.setItem('uid', userId)
+  }
+  const logout  = (e) =>{
+    e.preventDefault()
+
+    localStorage.removeItem('uid')
+    UserModel.logout()
+    .then(res =>{
+      setCurrentUser(null)
+      props.history.push('/login')
+    })
+  }
+  
+
+
+
   return (
+    
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div>
+        <Header
+        currentUser = { currentUser }
+        logout = { logout }
+
+      />
+      </div>
+   
+      <Routes 
+         currentUser = { currentUser }
+         storeUser = { storeUser }
+      />
+   
     </div>
   );
 }
 
-export default App;
+export default  withRouter(App);
